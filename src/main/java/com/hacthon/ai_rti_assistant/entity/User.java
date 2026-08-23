@@ -2,7 +2,6 @@ package com.hacthon.ai_rti_assistant.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,13 +27,14 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Size(min = 6,max = 10)
     private String password;
 
     @Column(nullable = false)
     private boolean emailVerified = false;
 
+    @Column(length = 30)
+    private String phone;
 
-    }
-
-
+    @Column(columnDefinition = "TEXT")
+    private String address;
+}

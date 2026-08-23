@@ -42,8 +42,8 @@ public class OtpController {
 
         String key = "resend-otp:" + email;
 
-        // 3 requests / 10 minutes
-        if (!rateLimiterService.isAllowed(key, 3, 10 * 60 * 1000)) {
+        // 40 requests / 10 minutes for devlopment
+        if (!rateLimiterService.isAllowed(key, 4, 10 * 60 * 1000)) {
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
                     .body("Too many attempts. Try again later.");

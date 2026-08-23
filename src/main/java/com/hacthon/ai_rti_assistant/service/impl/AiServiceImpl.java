@@ -34,30 +34,34 @@ public class AiServiceImpl implements AiService {
     ) {
 
         String prompt = """
-                You are an expert Indian RTI application writer.
+        You are an expert Indian RTI application writer.
 
-                Create a formal and legally appropriate RTI application
-                based on the user's information.
+        Create a formal and legally appropriate RTI application
+        based on the user's information.
 
-                Issue:
-                %s
+        Issue:
+        %s
 
-                Location:
-                %s
+        Location:
+        %s
 
-                Department:
-                %s
+        Department:
+        %s
 
-                The application should:
-                - Have a clear subject.
-                - Address the appropriate Public Information Officer.
-                - Ask specific information-related questions.
-                - Be professional and concise.
-                - Not invent facts that the user did not provide.
-                - Follow the general structure of an Indian RTI application.
+        The application should:
+        - Have a clear subject.
+        - Address the appropriate Public Information Officer.
+        - Ask specific information-related questions.
+        - Be professional and concise.
+        - Not invent facts that the user did not provide.
+        - Follow the general structure of an Indian RTI application.
+        - Do not include applicant personal details.
+        - Do not include placeholders for name, address, phone, email, date, or signature.
+        - Do not write [Your Name], [Your Address], [Your Phone Number],
+          [Insert Date], or similar placeholders.
 
-                Return only the RTI application text.
-                """.formatted(
+        Return only the RTI application text.
+        """.formatted(
                 issueDescription,
                 location,
                 department
@@ -75,7 +79,7 @@ public class AiServiceImpl implements AiService {
 
         Map response = restClient.post()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/v1beta/models/gemini-2.0-flash:generateContent")
+                        .path("/v1beta/models/gemini-3.6-flash:generateContent")
                         .queryParam("key", apiKey)
                         .build())
                 .contentType(MediaType.APPLICATION_JSON)

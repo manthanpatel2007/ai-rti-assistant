@@ -40,9 +40,7 @@ public class RtiServiceImpl implements RtiService {
         this.pioRepository = pioRepository;
     }
 
-    // =====================================================
-    // CREATE RTI
-    // =====================================================
+
 
     @Override
     public RtiRequest createRti(
@@ -50,9 +48,7 @@ public class RtiServiceImpl implements RtiService {
             String userEmail
     ) {
 
-        // =========================
-        // 1. Validate both checkboxes
-        // =========================
+
 
         if (!request.isInformationConfirmed()
                 || !request.isSubmissionConsent()) {
@@ -62,9 +58,7 @@ public class RtiServiceImpl implements RtiService {
             );
         }
 
-        // =========================
-        // 2. Find logged-in user
-        // =========================
+
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() ->
@@ -138,9 +132,7 @@ public class RtiServiceImpl implements RtiService {
         return rtiRequestRepository.save(rtiRequest);
     }
 
-    // =====================================================
-    // GET MY RTIs
-    // =====================================================
+
 
     @Override
     public List<RtiRequest> getMyRtis(
@@ -160,12 +152,6 @@ public class RtiServiceImpl implements RtiService {
                 );
     }
 
-    // =====================================================
-    // SEND RTI
-    // TO  = PIO
-    // CC  = Registered User
-    // PDF = Generated RTI PDF
-    // =====================================================
 
     @Override
     public void sendRti(
@@ -173,9 +159,7 @@ public class RtiServiceImpl implements RtiService {
             String userEmail
     ) {
 
-        // =========================
-        // 1. Find RTI
-        // =========================
+
 
         RtiRequest rtiRequest =
                 rtiRequestRepository.findById(rtiRequestId)
@@ -185,9 +169,7 @@ public class RtiServiceImpl implements RtiService {
                                 )
                         );
 
-        // =========================
-        // 2. Verify RTI belongs to user
-        // =========================
+
 
         if (!rtiRequest.getUser()
                 .getEmail()
@@ -198,9 +180,7 @@ public class RtiServiceImpl implements RtiService {
             );
         }
 
-        // =========================
-        // 3. Verify consent
-        // =========================
+
 
         if (!rtiRequest.isInformationConfirmed()
                 || !rtiRequest.isSubmissionConsent()) {
@@ -210,9 +190,7 @@ public class RtiServiceImpl implements RtiService {
             );
         }
 
-        // =========================
-        // 4. Verify PDF exists
-        // =========================
+
 
         if (rtiRequest.getPdfPath() == null
                 || rtiRequest.getPdfPath().isBlank()) {
@@ -222,9 +200,6 @@ public class RtiServiceImpl implements RtiService {
             );
         }
 
-        // =========================
-        // 5. Find PIO
-        // =========================
 
         PIO pio = pioRepository
                 .findFirstByDepartmentName(
@@ -236,9 +211,7 @@ public class RtiServiceImpl implements RtiService {
                         )
                 );
 
-        // =========================
-        // 6. Send email through Brevo
-        // =========================
+
 
         try {
 
@@ -251,14 +224,13 @@ public class RtiServiceImpl implements RtiService {
 
         } catch (Exception e) {
 
+            e.printStackTrace();
+
             throw new BadRequestException(
-                    "Failed to send RTI email"
+                    "Failed to send RTI email: " + e.getMessage()
             );
         }
 
-        // =========================
-        // 7. Update status
-        // =========================
 
         rtiRequest.setStatus(
                 RtiStatus.SENT

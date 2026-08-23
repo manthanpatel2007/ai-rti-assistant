@@ -13,4 +13,16 @@ public interface AuthService {
     void verifyOtp(String email, String otp);
 
     void resendOtp(String email);
+
+    void forgotPassword(String email);
+
+    void resetPassword(
+            String email,
+            String otp,
+            String newPassword
+    );
+
+    LoginResponse refreshAccessToken(String refreshToken);
+
+    void logout(String refreshToken);
 }

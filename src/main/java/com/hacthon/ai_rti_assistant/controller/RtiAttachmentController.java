@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/rti")
+@RequestMapping("/api/rti/attachments")
 public class RtiAttachmentController {
 
     private final RtiAttachmentService attachmentService;
@@ -22,7 +22,7 @@ public class RtiAttachmentController {
     }
 
     @PostMapping(
-            value = "/{rtiRequestId}/attachments",
+            value = "/{rtiRequestId}",
             consumes = "multipart/form-data"
     )
     public ResponseEntity<?> uploadAttachment(
@@ -46,6 +46,7 @@ public class RtiAttachmentController {
                     .body(e.getMessage());
         }
     }
+
     @GetMapping("/{attachmentId}/view")
     public ResponseEntity<?> viewAttachment(
             @PathVariable Long attachmentId

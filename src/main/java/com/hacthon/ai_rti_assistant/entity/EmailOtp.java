@@ -33,4 +33,8 @@ public class EmailOtp {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OtpPurpose purpose;
 }

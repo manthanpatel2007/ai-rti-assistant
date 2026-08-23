@@ -5,8 +5,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Builder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@Builder
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -32,7 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+
+
+
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+
+
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,26 +46,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
+
             String email = jwtService.extractEmail(token);
 
-            if (email != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                if (jwtService.isTokenValid(token, email)) {
+
+            if (email != null
+                    && SecurityContextHolder
+                    .getContext()
+                    .getAuthentication() == null) {
+
+                boolean valid =
+                        jwtService.isTokenValid(
+                                token,
+                                email
+                        );
+
+
+
+                if (valid) {
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     email,
                                     null,
-                                    java.util.Collections.emptyList()
+                                    AuthorityUtils.NO_AUTHORITIES
                             );
 
-                    SecurityContextHolder.getContext()
+                    SecurityContextHolder
+                            .getContext()
                             .setAuthentication(authentication);
+
+
                 }
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
+
+
+
             e.printStackTrace();
         }
 

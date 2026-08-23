@@ -5,6 +5,7 @@ import com.hacthon.ai_rti_assistant.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -19,132 +20,309 @@ public class GovernmentDataInitializer implements CommandLineRunner {
     private final PIORepository pioRepository;
 
     @Override
+    @Transactional
     public void run(String... args) {
 
-        if (districtRepository.count() > 0) {
-            return;
+
+
+        District ahmedabad = districtRepository
+                .findAll()
+                .stream()
+                .filter(d -> d.getName().equals("Ahmedabad"))
+                .findFirst()
+                .orElseGet(() ->
+                        districtRepository.save(
+                                District.builder()
+                                        .name("Ahmedabad")
+                                        .state("Gujarat")
+                                        .build()
+                        )
+                );
+
+
+
+        SubDistrict sanand = subDistrictRepository
+                .findAll()
+                .stream()
+                .filter(sd ->
+                        sd.getName().equals("Sanand")
+                                && sd.getDistrict().getId()
+                                .equals(ahmedabad.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        subDistrictRepository.save(
+                                SubDistrict.builder()
+                                        .name("Sanand")
+                                        .district(ahmedabad)
+                                        .build()
+                        )
+                );
+
+        SubDistrict daskroi = subDistrictRepository
+                .findAll()
+                .stream()
+                .filter(sd ->
+                        sd.getName().equals("Daskroi")
+                                && sd.getDistrict().getId()
+                                .equals(ahmedabad.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        subDistrictRepository.save(
+                                SubDistrict.builder()
+                                        .name("Daskroi")
+                                        .district(ahmedabad)
+                                        .build()
+                        )
+                );
+
+        SubDistrict dholka = subDistrictRepository
+                .findAll()
+                .stream()
+                .filter(sd ->
+                        sd.getName().equals("Dholka")
+                                && sd.getDistrict().getId()
+                                .equals(ahmedabad.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        subDistrictRepository.save(
+                                SubDistrict.builder()
+                                        .name("Dholka")
+                                        .district(ahmedabad)
+                                        .build()
+                        )
+                );
+
+
+
+        Department roads = departmentRepository
+                .findAll()
+                .stream()
+                .filter(d ->
+                        d.getName().equals("Roads")
+                                && d.getSubDistrict().getId()
+                                .equals(sanand.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        departmentRepository.save(
+                                Department.builder()
+                                        .name("Roads")
+                                        .subDistrict(sanand)
+                                        .build()
+                        )
+                );
+
+        Department water = departmentRepository
+                .findAll()
+                .stream()
+                .filter(d ->
+                        d.getName().equals("Water Supply")
+                                && d.getSubDistrict().getId()
+                                .equals(sanand.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        departmentRepository.save(
+                                Department.builder()
+                                        .name("Water Supply")
+                                        .subDistrict(sanand)
+                                        .build()
+                        )
+                );
+
+        Department waste = departmentRepository
+                .findAll()
+                .stream()
+                .filter(d ->
+                        d.getName().equals("Waste Management")
+                                && d.getSubDistrict().getId()
+                                .equals(sanand.getId())
+                )
+                .findFirst()
+                .orElseGet(() ->
+                        departmentRepository.save(
+                                Department.builder()
+                                        .name("Waste Management")
+                                        .subDistrict(sanand)
+                                        .build()
+                        )
+                );
+
+
+        if (problemCategoryRepository
+                .findByDepartmentId(roads.getId())
+                .isEmpty()) {
+
+            problemCategoryRepository.save(
+                    ProblemCategory.builder()
+                            .name("Road Repair")
+                            .keywords(
+                                    "road,pothole,road damage,road repair"
+                            )
+                            .department(roads)
+                            .build()
+            );
         }
 
-        District ahmedabad = districtRepository.save(
-                District.builder()
-                        .name("Ahmedabad")
-                        .state("Gujarat")
-                        .build()
-        );
+        if (problemCategoryRepository
+                .findByDepartmentId(water.getId())
+                .isEmpty()) {
+
+            problemCategoryRepository.save(
+                    ProblemCategory.builder()
+                            .name("Water Supply Issue")
+                            .keywords(
+                                    "water,no water,pipeline,water supply"
+                            )
+                            .department(water)
+                            .build()
+            );
+        }
+
+        if (problemCategoryRepository
+                .findByDepartmentId(waste.getId())
+                .isEmpty()) {
+
+            problemCategoryRepository.save(
+                    ProblemCategory.builder()
+                            .name("Garbage Collection")
+                            .keywords(
+                                    "garbage,waste,dustbin,trash"
+                            )
+                            .department(waste)
+                            .build()
+            );
+        }
 
 
-        SubDistrict sanand = subDistrictRepository.save(
-                SubDistrict.builder()
-                        .name("Sanand")
-                        .district(ahmedabad)
-                        .build()
-        );
 
-        SubDistrict daskroi = subDistrictRepository.save(
-                SubDistrict.builder()
-                        .name("Daskroi")
-                        .district(ahmedabad)
-                        .build()
-        );
+        if (pioRepository
+                .findByDepartmentId(roads.getId())
+                .isEmpty()) {
 
-        SubDistrict dholka = subDistrictRepository.save(
-                SubDistrict.builder()
-                        .name("Dholka")
-                        .district(ahmedabad)
-                        .build()
-        );
-
-
-        Department roads = departmentRepository.save(
-                Department.builder()
-                        .name("Roads")
-                        .subDistrict(sanand)
-                        .build()
-        );
-
-        Department water = departmentRepository.save(
-                Department.builder()
-                        .name("Water Supply")
-                        .subDistrict(sanand)
-                        .build()
-        );
-
-        Department waste = departmentRepository.save(
-                Department.builder()
-                        .name("Waste Management")
-                        .subDistrict(sanand)
-                        .build()
-        );
+            pioRepository.save(
+                    PIO.builder()
+                            .name(
+                                    "Chief Officer, Sanand Nagarpalika"
+                            )
+                            .designation(
+                                    "Public Information Officer (Chief Officer)"
+                            )
+                            .email(
+                                    "np_sanand@yahoo.co.in"
+                            )
+                            .phone(
+                                    "02717222112"
+                            )
+                            .officeAddress(
+                                    "Sanand Nagarpalika Office, " +
+                                            "Taluka - Sanand, " +
+                                            "Ahmedabad - 382110"
+                            )
+                            .sourceUrl(
+                                    "https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/"
+                            )
+                            .verifiedAt(
+                                    LocalDateTime.of(
+                                            2026,
+                                            8,
+                                            14,
+                                            0,
+                                            0
+                                    )
+                            )
+                            .department(roads)
+                            .build()
+            );
+        }
 
 
-        problemCategoryRepository.save(
-                ProblemCategory.builder()
-                        .name("Road Repair")
-                        .keywords("road,pothole,road damage,road repair")
-                        .department(roads)
-                        .build()
-        );
 
-        problemCategoryRepository.save(
-                ProblemCategory.builder()
-                        .name("Water Supply Issue")
-                        .keywords("water,no water,pipeline,water supply")
-                        .department(water)
-                        .build()
-        );
+        if (pioRepository
+                .findByDepartmentId(water.getId())
+                .isEmpty()) {
 
-        problemCategoryRepository.save(
-                ProblemCategory.builder()
-                        .name("Garbage Collection")
-                        .keywords("garbage,waste,dustbin,trash")
-                        .department(waste)
-                        .build()
-        );
-
-        // NOTE: Roads, Water Supply, and Waste Management in Sanand taluka are all
-        // administered by Sanand Nagarpalika (the municipal body). The Chief Officer
-        // acts as PIO for RTI requests to this office. The specific officeholder's
-        // name and direct phone number are NOT published online as of verification
-        // date below — confirm these by phone/visit before using in production.
-
-        pioRepository.save(
-                PIO.builder()
-                        .name("Chief Officer, Sanand Nagarpalika")
-                        .designation("Public Information Officer (Chief Officer)")
-                        .email("np_sanand@yahoo.co.in")
-                        .phone("02717222112")
-                        .officeAddress("Sanand Nagarpalika Office, Taluka - Sanand, Ahmedabad - 382110")
-                        .sourceUrl("https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/")
-                        .verifiedAt(LocalDateTime.of(2026, 8, 14, 0, 0))
-                        .department(roads)
-                        .build()
-        );
-
-        pioRepository.save(
-                PIO.builder()
-                        .name("Chief Officer, Sanand Nagarpalika")
-                        .designation("Public Information Officer (Chief Officer)")
-                        .email("np_sanand@yahoo.co.in")
-                        .phone("02717222112")
-                        .officeAddress("Sanand Nagarpalika Office, Taluka - Sanand, Ahmedabad - 382110")
-                        .sourceUrl("https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/")
-                        .verifiedAt(LocalDateTime.of(2026, 8, 14, 0, 0))
-                        .department(water)
-                        .build()
-        );
+            pioRepository.save(
+                    PIO.builder()
+                            .name(
+                                    "Chief Officer, Sanand Nagarpalika"
+                            )
+                            .designation(
+                                    "Public Information Officer (Chief Officer)"
+                            )
+                            .email(
+                                    "np_sanand@yahoo.co.in"
+                            )
+                            .phone(
+                                    "02717222112"
+                            )
+                            .officeAddress(
+                                    "Sanand Nagarpalika Office, " +
+                                            "Taluka - Sanand, " +
+                                            "Ahmedabad - 382110"
+                            )
+                            .sourceUrl(
+                                    "https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/"
+                            )
+                            .verifiedAt(
+                                    LocalDateTime.of(
+                                            2026,
+                                            8,
+                                            14,
+                                            0,
+                                            0
+                                    )
+                            )
+                            .department(water)
+                            .build()
+            );
+        }
 
 
-        pioRepository.save(
-                PIO.builder()
-                        .name("Chief Officer, Sanand Nagarpalika")
-                        .designation("Public Information Officer (Chief Officer)")
-                        .email("np_sanand@yahoo.co.in")
-                        .phone("02717222112")
-                        .officeAddress("Sanand Nagarpalika Office, Taluka - Sanand, Ahmedabad - 382110")
-                        .sourceUrl("https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/")
-                        .verifiedAt(LocalDateTime.of(2026, 8, 14, 0, 0))
-                        .department(waste)
-                        .build()
-        );
+
+        if (pioRepository
+                .findByDepartmentId(waste.getId())
+                .isEmpty()) {
+
+            pioRepository.save(
+                    PIO.builder()
+                            .name(
+                                    "Chief Officer, Sanand Nagarpalika"
+                            )
+                            .designation(
+                                    "Public Information Officer (Chief Officer)"
+                            )
+                            .email(
+                                    "np_sanand@yahoo.co.in"
+                            )
+                            .phone(
+                                    "02717222112"
+                            )
+                            .officeAddress(
+                                    "Sanand Nagarpalika Office, " +
+                                            "Taluka - Sanand, " +
+                                            "Ahmedabad - 382110"
+                            )
+                            .sourceUrl(
+                                    "https://ahmedabad.nic.in/public-utility/sanad-nagarpalika/"
+                            )
+                            .verifiedAt(
+                                    LocalDateTime.of(
+                                            2026,
+                                            8,
+                                            14,
+                                            0,
+                                            0
+                                    )
+                            )
+                            .department(waste)
+                            .build()
+            );
+        }
+
+
     }
 }

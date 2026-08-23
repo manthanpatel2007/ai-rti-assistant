@@ -15,4 +15,9 @@ public interface EmailService {
             String toEmail,
             String otp
     );
+
+    void sendPasswordResetOtpEmail(
+            String toEmail,
+            String otp
+    );
 }
