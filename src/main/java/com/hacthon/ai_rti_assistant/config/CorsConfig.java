@@ -17,7 +17,11 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://ai-rti-assistant.netlify.app",
+                        "https://6a8a0da8c998242f10697fc0--ai-rti-assistant.netlify.app"
+                )
         );
 
         configuration.setAllowedMethods(
